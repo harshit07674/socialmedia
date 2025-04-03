@@ -16,6 +16,19 @@ const Followers = ({route}) => {
            )
            .ref('/SocialMediaUsers/');
 
+           const reference2=firebase
+           .app()
+           .database(
+             'https://photoshare-e09d4-default-rtdb.asia-southeast1.firebasedatabase.app/'
+           )
+           .ref('/SocialMediaChats/');
+
+           const chatList=[id,senderId];
+           chatList.sort();
+           const room=chatList.join('_');
+
+           await reference2.child(room).remove();
+
            await reference.child(senderId).child('Follows').child(id).update({
             isSeen:false,
             delete:true,
@@ -73,6 +86,7 @@ const styles={
         marginLeft:10,
         fontSize:20,
         fontWeight:'bold',
+        width:'40%',
         color:'black'
     },
     circularButton:{

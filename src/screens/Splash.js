@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {View, Image} from 'react-native';
+import {View, Image,Text} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Splash = ({navigation}) => {
@@ -32,7 +32,7 @@ const Splash = ({navigation}) => {
     <View style={styles.screen}>
       <Image
         source={require('../assets/logo/social_bg.png')}
-        style={styles.splashImage}></Image>
+        style={styles.splashImage}></Image> 
     </View>
   );
 };
@@ -46,8 +46,8 @@ const styles = {
     justifyContent: 'center',
   },
   splashImage: {
-    height: '40%',
-    width: '70%',
+    height: '50%',
+    width: '90%',
   },
 };
 

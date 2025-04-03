@@ -18,8 +18,8 @@ import {circle} from 'react-native/Libraries/Animated/Easing';
 const UsersScreen = ({navigation}) => {
   const [users, setUsers] = useState(null);
   const [uiLoading, setLoading] = useState(false);
-  const [sendedRequests, setSendedRequests] = useState(null);
-  const [followers, setFollowers] = useState(null);
+  const [sendedRequests, setSendedRequests] = useState([]);
+  const [followers, setFollowers] = useState([]);
 
   const [searchText, setSearch] = useState('');
   const id = firebase.auth().currentUser.uid;
@@ -294,6 +294,7 @@ const styles = {
   label: {
     fontSize: 16,
     fontWeight: 'bold',
+    width:'39%',
     marginLeft: 10,
     color: 'black',
   },
@@ -306,7 +307,6 @@ const styles = {
     borderRadius: 20,
     backgroundColor: 'yellow',
     elevation: 10,
-    marginLeft: 10,
   },
   row: {
     flexDirection: 'row',

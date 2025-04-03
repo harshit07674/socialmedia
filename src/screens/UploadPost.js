@@ -6,6 +6,7 @@ import {
   Alert,
   StatusBar,
   Pressable,
+  Dimensions,
   Image,
   TouchableOpacity,
 } from 'react-native';
@@ -34,6 +35,7 @@ const UploadPost = ({navigation, route}) => {
   const [data, setUserData] = useState('');
   const [paused,setPaused]=useState(false);
   const currId = auth().currentUser.uid;
+  const {width,height}=Dimensions.get('screen');
 
   // Handles the logic for selecting an image from the camera or gallery
   const handleImagePicker = type => {
@@ -214,7 +216,7 @@ const UploadPost = ({navigation, route}) => {
         <Icon
           name="earth"
           color={'black'}
-          style={styles.earthIcon}
+          style={{marginLeft:width*0.1}}
           size={40}></Icon>
         <TouchableOpacity
           style={styles.postButton}
@@ -262,7 +264,7 @@ const styles = {
     paddingTop: 30,
   },
   bar: {
-    width: '100%',
+    width: '95%',
     marginLeft: 10,
     marginRight: 10,
     flexDirection: 'row',
@@ -283,9 +285,6 @@ const styles = {
       color: color,
       marginLeft: 10,
     };
-  },
-  earthIcon: {
-    marginLeft: '25%',
   },
   postButton: {
     height: 40,

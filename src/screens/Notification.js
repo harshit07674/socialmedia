@@ -95,8 +95,11 @@ const Notification = ({navigation}) => {
                      flexDirection: 'row',
                      alignItems: 'center',
                      justifyContent: 'flex-start',
+                     width:'90%',
+                     overflow:'hidden',
                    }}>
                     <TouchableOpacity onPress={()=>navigation.navigate('userProfile',{uid:item.uid})}>
+                      
                    <View style={styles.circle}>
                      <Image
                        source={{uri: item.profilePhoto}}
@@ -104,7 +107,7 @@ const Notification = ({navigation}) => {
                    </View>
                    </TouchableOpacity>
                    <Text style={styles.label(16)}>{'@' + item.name}</Text>
-                   <Text style={styles.label(16)}>{item.delete!==undefined && item.delete===true?'Unfollowed You':'And You Both Are Friends Now'}</Text>
+                   <Text style={styles.label(16)}>{item.delete!==undefined && item.delete===true?'Unfollowed You':'And You Are Friends'}</Text>
                  </View>                 
                </View>
       }}></FlatList>
@@ -145,6 +148,7 @@ const styles = {
         return{
       fontSize: 16,
       fontWeight: 'bold',
+
       marginLeft:3,
       color: 'black',
         }

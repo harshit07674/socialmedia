@@ -15,6 +15,7 @@ import {
   Pressable,
   Text,
   Image,
+  ImageBackground,
   Modal,
   StatusBar,
 } from 'react-native';
@@ -51,6 +52,9 @@ import MicView from '../components/MicView';
 import FileDialog from '../components/FileDialog';
 import Geolocation from '@react-native-community/geolocation';
 import OpenMap from 'react-native-open-maps';
+import Polls from '../components/Polls';
+import { ThemeProvider } from '@react-navigation/native';
+import ThemesList from '../constants/ThemesList';
 
 const Chat = ({navigation, route}) => {
 
@@ -82,6 +86,11 @@ const Chat = ({navigation, route}) => {
   const [videoPane,setVideoPane]=useState(false);
   const [videoSource,setVideoSource]=useState(null);
   const [openFileDialog,setFileDialog]=useState(false);
+  const [showForward,setShowForward]=useState(true);
+  const [showReply,setShowReply]=useState(true);
+  const [showCopy,setshowCopy]=useState(false);
+  const [wallpaper,setWallpaper]=useState(null);
+  
   
   const fetchMap=(latitude,longitude)=>{
     OpenMap({latitude,longitude});
@@ -98,7 +107,7 @@ const Chat = ({navigation, route}) => {
           'https://photoshare-e09d4-default-rtdb.asia-southeast1.firebasedatabase.app/',
         )
         .ref('/SocialMediaChats/')
-        .child(room)
+        .child(room).child('chats')
         .child(dateTime);
 
       const reference2 = firebase
@@ -210,7 +219,7 @@ const Chat = ({navigation, route}) => {
         'https://photoshare-e09d4-default-rtdb.asia-southeast1.firebasedatabase.app/',
       )
       .ref('/SocialMediaChats/')
-      .child(room);
+      .child(room).child('chats');
 
     try {
       console.log(item.reactions);
@@ -298,6 +307,9 @@ const Chat = ({navigation, route}) => {
       } else if (response.error) {
         console.log('ImagePicker Error: ', response.error);
       } else if (response.assets && response.assets[0].uri) {
+       if(type==='video'){
+        setVideoFiles(true);
+       }
         response.assets.forEach(asset => {
           setSelectedImages(s => [...s, asset.uri]);
         });
@@ -329,15 +341,27 @@ const Chat = ({navigation, route}) => {
           'https://photoshare-e09d4-default-rtdb.asia-southeast1.firebasedatabase.app/',
         )
         .ref('/SocialMediaChats/')
-        .child(room);
+        .child(room)
 
-      await reference.orderByKey('id').on('value', snapshot => {
+      await reference.child('chats').orderByChild('id').on('value', snapshot => {
         const chatData = snapshot.val();
         if (chatData) {
           const chatMessages = Object.values(chatData).reverse();
           setChats(chatMessages);
         }
       });
+      await reference.child('wallpaper').child(id).on('value',snapshot=>{
+        if(snapshot.val()===null){
+          setWallpaper(0);
+        }
+        else{
+        const wallpapers = snapshot.val();
+        if(wallpapers){ 
+          setWallpaper(wallpapers.wallpaper_id-1);
+          console.log({wallpaper});
+        }
+      }
+      })
     } catch (error) {
       console.log(error);
     } finally {
@@ -355,7 +379,7 @@ const Chat = ({navigation, route}) => {
           'https://photoshare-e09d4-default-rtdb.asia-southeast1.firebasedatabase.app/',
         )
         .ref('/SocialMediaChats/')
-        .child(room)
+        .child(room).child('chats')
         .child(chatId);
 
       if (userId !== id) {
@@ -400,7 +424,7 @@ const Chat = ({navigation, route}) => {
   };
 
   // adds new chat message
-  const addChat = async () => {
+  const addChat = async (text) => {
     try {
       chatIdList.sort();
       const room = chatIdList.join('_');
@@ -411,7 +435,7 @@ const Chat = ({navigation, route}) => {
           'https://photoshare-e09d4-default-rtdb.asia-southeast1.firebasedatabase.app/',
         )
         .ref('/SocialMediaChats/')
-        .child(room);
+        .child(room).child('chats')
 
       const reference2 = firebase
         .app()
@@ -430,16 +454,22 @@ const Chat = ({navigation, route}) => {
         console.log(data);
       });
       if (reply !== null) {
+        
+
         const message = {
           replyTo: reply.message,
           replyToId: reply.id,
           replyToName: reply.name,
+          isReplyOnSharedMedia:reply.isShared,
+          mediaType:reply.mediaType,
+          fileName:reply.mediaType!=='photo'&&reply.mediaType!=='video'&&reply.mediaType!=='text'?reply.fileName:'',
         };
+      
 
         await reference.child(dateTime).set({
           uid: id,
           message: message,
-          replyMessage: chatText,
+          replyMessage: text,
           profilePhoto: data.profilePhoto,
           name: data.name,
           isSeen: false,
@@ -448,6 +478,7 @@ const Chat = ({navigation, route}) => {
           isMedia: false,
           isShared: false,
           snap:false,
+          mediaType:'text',
           id: dateTime,
           date: realDate.formatedDate,
           time: realDate.realTime,
@@ -460,7 +491,7 @@ const Chat = ({navigation, route}) => {
       } else {
         await reference.child(dateTime).set({
           uid: id,
-          message: chatText,
+          message: text,
           profilePhoto: data.profilePhoto,
           name: data.name,
           isSeen: false,
@@ -468,6 +499,7 @@ const Chat = ({navigation, route}) => {
           isForward: false,
           isMedia: false,
           isShared: false,
+          mediaType:'text',
           id: dateTime,
           date: realDate.formatedDate,
           time: realDate.realTime,
@@ -481,7 +513,7 @@ const Chat = ({navigation, route}) => {
   };
 
   // sends media files
-  const shareMedia = async () => {
+  const shareMedia = async (mediaType) => {
     try {
       chatIdList.sort();
       const room = chatIdList.join('_');
@@ -492,7 +524,7 @@ const Chat = ({navigation, route}) => {
           'https://photoshare-e09d4-default-rtdb.asia-southeast1.firebasedatabase.app/',
         )
         .ref('/SocialMediaChats/')
-        .child(room)
+        .child(room).child('chats')
         .child(dateTime);
 
       const reference2 = firebase
@@ -530,7 +562,7 @@ const Chat = ({navigation, route}) => {
           isReply: false,
           captionText,
           isMedia: true,
-          mediaType:isVideoFiles?'video':'photo',
+          mediaType:mediaType,
           isShared: false,
           id: dateTime,
           date: realDate.formatedDate,
@@ -593,17 +625,19 @@ const Chat = ({navigation, route}) => {
   }
 
   return (
+    <ImageBackground resizeMode='cover' source={wallpaper!==null?ThemesList[wallpaper].src:ThemesList[0].src} style={{flex:1,resizeMode:'cover'}}>
     <View style={{flex: 1}}>
       <StatusBar
         backgroundColor={'white'}
         barStyle={'dark-content'}></StatusBar>
-      <ChatHeader name={route.params.name} profile={route.params.profile} online={online} navFunction={()=>navigation.goBack()} option={options} forwardFunction={() => {
+      <ChatHeader navToChatProfile={()=>navigation.navigate('chatProfile',{id: route.params.id, name:route.params.name,profile:route.params.profile})} isShowCopy={showCopy} isShowForward={showForward} isShowReply={showReply} name={route.params.name} profile={route.params.profile} online={online} navFunction={()=>navigation.goBack()} option={options} forwardFunction={() => {
                       setValue();
                       navigation.navigate('Friends', {
                         isShare: true,
                         item: chat,
                         isForward: true,
                       });
+                    
                     }} replyFunction={() => setReply(chat)} copyFunction={()=>copyToClipboard()}/>  
       {snaps!==null && <TouchableOpacity onPress={()=>navigation.navigate('snap',{id:chatIdList,sendId:route.params.id})}><View style={{flexDirection:'row',alignItems:'center',justifyContent:'center',alignSelf:'center',height:40,paddingLeft:10,paddingRight:10,borderRadius:30,elevation:10,backgroundColor:'rgba(0,0,0,0.2)'}}>
         <Text style={{color:'black',fontSize:20,fontWeight:'bold'}}>{'Snaps: '+snaps.length}</Text>
@@ -631,6 +665,24 @@ const Chat = ({navigation, route}) => {
                   setOptions(true);
                   setIndex(index);
                   setChat(item);
+                  if(item.isReply==true||item.mediaType==='location'||item.mediaType==='polls'){
+                    setShowForward(false);
+                  }
+                  else{
+                    setShowForward(true);
+                  }
+                  if(item.mediaType==='location'||item.mediaType==='polls'){
+                    setShowReply(false);
+                  }
+                  else{
+                    setShowReply(true);
+                  }
+                  if(item.mediaType!=='text'){
+                    setshowCopy(false);
+                  }
+                  else{
+                    setshowCopy(true);
+                  }
                 }}
                 onPress={() => {
                   setOptions(false);
@@ -655,7 +707,7 @@ const Chat = ({navigation, route}) => {
                       {item.uid === id ? 'You' : item.name}
                     </Text>
                     {item.isReply ? (
-                      <ReplyMessage replyToName={item.message.replyToName} replyTo={item.message.replyTo} replyMessage={item.replyMessage}/>
+                      <ReplyMessage name={route.params.name} item={item}/>
                     ) : item.isMedia && item.isShared ? (
                       <SharedMessage item={item} navFunction={() =>
                                                       navigation.navigate('Home', {
@@ -669,7 +721,7 @@ const Chat = ({navigation, route}) => {
                         }
                          
                       }}><MediaMessage item={item}/></TouchableOpacity>
-                    ) : (
+                    ) : item.mediaType=='polls'?<Polls item={item} chatList={chatIdList}></Polls>:(
                       typeof item.message==='object'?<TouchableOpacity onPress={()=>fetchMap(item.message.latitude,item.message.longitude)}><View>
                         <Icon name='location-pin' color={'red'} size={30}></Icon>
                         <Text style={{color:'black',fontSize:20,fontWeight:'bold'}}>{item.uid===id?'You sent your location':`${item.name} sent his location`}</Text> 
@@ -716,6 +768,7 @@ const Chat = ({navigation, route}) => {
           );
         }}
       />
+    
       {documents && <FileDialog receiver={route.params.name} fileSize={documents[0].size} fileType={documents[0].type} fileUrl={documents[0].url} fileName={documents[0].name} isVisible={openFileDialog} visibleFunction={()=>{
         setFileDialog(false);
         setDocuments(null);
@@ -728,20 +781,21 @@ const Chat = ({navigation, route}) => {
            <Icon name='close' size={25} color={'black'}></Icon> 
           </View></TouchableOpacity>
           <Video style={styles.media} source={{uri:videoSource.message}} controls ></Video></View>}
-      <ChatField micOption={()=>setMic(true)} attachmentOption={()=>setOpenAttachment(true)} chatText={chatText} setText={()=>setChat(chatText)} chatFunction={()=>addChat()}/>
+      <ChatField micOption={()=>setMic(true)} attachmentOption={()=>setOpenAttachment(true)} chatText={chatText} setText={()=>setChat(chatText)} chatFunction={addChat}/>
       <AttachmentModal chatList={chatIdList} openAttachment={openAttachment} setOpenAttachment={setOpenAttachment} handleImagePicker={handleImagePicker} pickDocument={()=>pickDocument()} audioFunction={sendFileInChat}></AttachmentModal>   
       {selectImages.length !== 0 && (
         <AttachmentView setterFunction={ ()=> {
               setSelectedImages([]);
               setOpenAttachment(false);
               setVideoFiles(false);
-            }} images={selectImages} handleVideoPlay={()=>handlePlayPause()} videoFiles={isVideoFiles} receiverName={route.params.name} shareFunction={()=>shareMedia()} caption={captionText} setCaption={setCaption} ></AttachmentView>
+            }} images={selectImages} handleVideoPlay={()=>handlePlayPause()} videoFiles={isVideoFiles} receiverName={route.params.name} shareFunction={shareMedia} caption={captionText} setCaption={setCaption} ></AttachmentView>
       )}
       {reply !== null && (
        <ReplyView reply={reply} user={id}></ReplyView>
       )}
        {mic && <MicView user={id}></MicView>}
     </View>
+    </ImageBackground>
   );
 };
 

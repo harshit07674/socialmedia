@@ -199,7 +199,7 @@ const MediaMessage = ({item}) => {
             style={styles.media}
             source={{uri: item.message}}></Video>
         </View>
-      ) : item.mediaType == 'image' ? (
+      ) : item.mediaType == 'photo' ? (
         <Image source={{uri: item.message}} style={styles.media}></Image>
       ) : item.mediaType == 'audio' ? (
         <View>
@@ -270,7 +270,7 @@ const MediaMessage = ({item}) => {
 
 const styles = {
   media: {
-    height: 300,
+    height:'100%',
     width: 300,
     resizeMode: 'stretch',
   },

@@ -12,8 +12,9 @@ import DocumentPicker, { isInProgress, pick } from 'react-native-document-picker
 import SoundPlayer from 'react-native-sound-player';
 import RNFS from 'react-native-fs';
 import storage from '@react-native-firebase/storage';
+import PollsDialog from './PollsDialog';
 
-const AttachmentModal = ({ audioFunction,chatList,openAttachment, setOpenAttachment, handleImagePicker, pickDocument }) => {
+const AttachmentModal = ({ audioFunction,chatList,openAttachment,setOpenAttachment, handleImagePicker, pickDocument }) => {
 
   const [coordinates,setCoordinates]=useState(null);
   const [isAudio,setAudio]=useState(false);
@@ -24,6 +25,7 @@ const AttachmentModal = ({ audioFunction,chatList,openAttachment, setOpenAttachm
   const [currentMinute,setMinute]=useState(0);
   const [currentTime,setCurrentTime]=useState(0);
   const [isFirstPlay,setFirstPlay]=useState(false);
+  const [isPolls,setPolls]=useState(false);
 
 
   const fetchSoundDetails=()=>{
@@ -141,7 +143,7 @@ console.log(error);
          'https://photoshare-e09d4-default-rtdb.asia-southeast1.firebasedatabase.app/',
        )
        .ref('/SocialMediaChats/')
-       .child(room);
+       .child(room).child('chats');
        const dateTime= Date.now().toString();
        const realDate=formatTime(dateTime);
        const storageReference = storage().ref(
@@ -212,7 +214,7 @@ console.log(error);
        'https://photoshare-e09d4-default-rtdb.asia-southeast1.firebasedatabase.app/',
      )
      .ref('/SocialMediaChats/')
-     .child(room);
+     .child(room).child('chats');
      const dateTime= Date.now().toString();
      const realDate=formatTime(dateTime);
      await reference.child(dateTime).set({
@@ -225,6 +227,7 @@ console.log(error);
           isReply: false,
           isMedia: false,
           isShared: false,
+          mediaType:'location',
           snap:false,
           id: dateTime,
           date: realDate.formatedDate,
@@ -290,6 +293,9 @@ console.log(error);
     <View>
     <Modal visible={openAttachment} transparent={true} animationType="slide" onRequestClose={() => setOpenAttachment(false)}>
        <View style={styles.modalContainer}>
+       <TouchableOpacity onPress={() => setOpenAttachment(false)}>
+          <Icon name="close" size={40} color={'red'} />
+        </TouchableOpacity> 
       <FlatList data={attachmentList} columnWrapperStyle={{marginBottom:10}} keyExtractor={(item)=>item.id} numColumns={3} renderItem={({item})=>{
         return <TouchableOpacity onPress={()=>{
           if(item.id===1){
@@ -311,6 +317,10 @@ console.log(error);
           else if(item.id===6){
             sendAudioFile();
           }
+          else if(item.id===7){
+            setOpenAttachment(false);
+            setPolls(true);
+          }
         }}><View style={styles.options}>
         <Icon name={item.iconName} size={40} color={'blue'} />
         <Text style={styles.optionText}>{item.name}</Text>
@@ -318,12 +328,16 @@ console.log(error);
          
       }}></FlatList>
       </View>
-      <TouchableOpacity onPress={() => setOpenAttachment(false)}>
-          <Icon name="close" size={40} color={'red'} />
-        </TouchableOpacity> 
     </Modal>
+    <Modal visible={isPolls} transparent={true}><PollsDialog chatIdList={chatList} setPolls={()=>setPolls(false)}></PollsDialog></Modal>
     <Modal visible={isAudio} transparent={true} style={{height:'30%',width:'100%'}} 
     >
+    <TouchableOpacity onPress={()=>{
+      setAudio(false);
+      setAudioFile(null);
+    }}><View style={{alignItems:'center',justifyContent:'center',backgroundColor:'white',elevation:10}}>
+      <Icon name='close' size={30} color={'black'}></Icon>
+      </View></TouchableOpacity>  
     <View style={{height:'100%',width:'100%',backgroundColor:'rgba(0,0,0,0.5)'}}> 
     <View style={{flexDirection:'row',alignItems:'center',justifyContent:'flex-start',height:'10%',width:'95%',marginLeft:10,marginTop:20,backgroundColor:'white',elevation:10,borderRadius:20,alignSelf:'center'}}>
     <Icon name='audiotrack' size={80} color={'black'}></Icon>
@@ -356,18 +370,10 @@ console.log(error);
   );
 };
 
-{/* <TouchableOpacity onPress={pickDocument}>
-<View style={styles.options}>
-  <Icon name="insert-drive-file" size={40} color={'purple'} />
-  <Text style={styles.optionText}>Documents</Text>
-</View>
-</TouchableOpacity> */}
-
-
 const styles = {
   modalContainer: {
     padding:20,
-    height: '40%',
+    height: '50%',
     width: '95%',
     marginLeft: 10,
     top: '41%',
@@ -396,9 +402,9 @@ const styles = {
   },
   optionText: {
     color: 'black',
-    fontSize: 20,
+    fontSize: 15,
+    textAlign:'center',
     fontWeight: 'bold',
-    marginLeft: 15,
   },
 };
 

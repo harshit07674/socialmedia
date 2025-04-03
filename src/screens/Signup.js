@@ -178,7 +178,7 @@ const Signup = ({navigation}) => {
             isHidden={showImagePicker}
             setHidden={() => setShowImagePicker(false)}
             handleCamera={() => handleImagePicker('camera')}
-            handleGallerry={() => handleImagePicker('gallerry')}></DialogBox>
+            handleGallerry={() => handleImagePicker('gallery')}></DialogBox>
           <Text style={styles.heading}>Welcome To Social Media</Text>
           <Text style={styles.label}>Email</Text>
           <InputField

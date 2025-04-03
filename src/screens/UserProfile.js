@@ -164,16 +164,12 @@ const UserProfile = ({navigation, route}) => {
       </View>
       <TouchableOpacity onPress={()=>navigation.navigate('followers',{followers})}><View style={styles.row}>
         <Text style={styles.label}>Total Followers: </Text>
-        <Text style={styles.label}>{followCount!==0 && followCount}</Text>
+        <Text style={styles.label}>{ followCount}</Text>
       </View></TouchableOpacity>
       <View style={styles.row}>
         <Text style={styles.label}>Total Posts: </Text>
         <Text style={styles.label}>{user && user.totalPosts}</Text>
       </View>
-      {user && user.totalPosts!==0 && <View style={{marginTop:10,width:'100%',flexDirection:'row',alignItems:'flex-start',justifyContent:'center'}}>
-        <TouchableOpacity onPress={()=>setMode('images')}><Icon name='perm-media' size={40} color={'black'} style={{borderColor:mode==='images'?'black':'transparent',borderWidth:3}}></Icon></TouchableOpacity>
-        <TouchableOpacity onPress={()=>setMode('video')}><Icon name='videocam' size={40} color={'black'} style={{marginLeft:20,borderColor:mode==='video'?'black':'transparent',borderWidth:3}}></Icon></TouchableOpacity>
-        </View>}
       <View style={styles.postsContainer}>
         <FlatList
           contentContainerStyle={{flexGrow: 1}}
@@ -181,22 +177,7 @@ const UserProfile = ({navigation, route}) => {
           numColumns={2}
           data={posts}
           renderItem={({item,index}) => {
-            if(mode==='video'){
-            return <Pressable style={{
-              height: 200,
-              width: posts.length == 1 ? '97%' : '47%',
-              marginRight: 10,
-              marginTop:10,
-            }} onPress={()=>{
-              setIndex(index);
-              setPaused(!paused);
-            }}><Video paused={index!==-1?index===currIndex && paused:paused} source={{uri: item.ImagePost}} style={{
-              height: 200,
-              width: posts.length == 1 ? '97%' : '47%',
-              marginRight: 10,
-              marginTop:10,
-            }}></Video></Pressable>}
-            else{
+           
             return <Image
               source={{uri: item.ImagePost}}
               style={{
@@ -204,7 +185,8 @@ const UserProfile = ({navigation, route}) => {
                 width: posts.length == 1 ? '97%' : '47%',
                 marginRight: 10,
                 marginTop:10,
-              }}></Image>}
+                resizeMode:'stretch'
+              }}></Image>
             }}
           keyExtractor={item => item.id}></FlatList>
         <TouchableOpacity
@@ -281,6 +263,7 @@ const styles = {
     alignSelf: 'center',
     marginBottom: 20,
     borderRadius: 30,
+    marginTop:10,
     height: 50,
     width: 130,
     backgroundColor: 'red',

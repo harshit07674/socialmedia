@@ -1,5 +1,7 @@
 import React from 'react'
-import { View,Text, } from 'react-native'
+import { View,Text, Image} from 'react-native'
+import Video from 'react-native-video'
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const ReplyView = ({reply,user}) => {
   return (
@@ -32,7 +34,17 @@ const ReplyView = ({reply,user}) => {
                  <Text style={styles.label}>
                    {reply.uid === user ? 'You' : reply.name}
                  </Text>
-                 <Text style={styles.label}>{reply.message}</Text>
+                 {
+                  reply.mediaType==='photo'?<Image source={{uri:reply.message}} style={{height:300,width:300}}></Image>:
+                  reply.mediaType==='video'?<Video paused={true} source={{uri:reply.message}} style={{height:300,width:300}}></Video>:
+                  reply.mediaType==='oneTimeImage'?<View>
+                    <View style={{height:40,width:90,backgroundColor:'black',borderRadius:30,alignItems:'center',justifyContent:'center'}}>
+                     <Text style={{color:'white',fontSize:20,fontWeight:'bold'}}>Shared</Text> 
+                    </View>
+                    <Text style={{color:'black',fontSize:20,fontWeight:'bold'}}>{reply.message.uploaderName}</Text>
+                    <Image source={{uri:reply.message.uploaderProfileUrl}} style={{marginTop:10,height:200,width:200,resizeMode:'stretch'}}></Image></View>:
+                  reply.mediaType==='audio'||reply.mediaType!=='text'?<View style={{height:'100%',flexDirection:'row',alignItems:'center',justifyContent:'flex-start'}}><Icon name={reply.mediaType==='audio'?'audiotrack':'file-open'} size={60} color={'black'}></Icon><Text style={{color:'black',fontSize:20,fontWeight:'bold',width:'70%'}}>{reply.fileName}</Text>{reply.mediaType==='audio'&&<Icon name='play-arrow' size={30} color={'black'}></Icon>}</View>:<Text style={{color:'black',fontSize:20,fontWeight:'bold'}}>{reply.message}</Text>
+                 }
                </View>
              </View>
            </View>

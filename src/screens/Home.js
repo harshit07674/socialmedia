@@ -127,13 +127,14 @@ const Home = ({navigation,route}) => {
           followers=Object.keys(data);
         })
 
-      let userData;
+      let userData=[];
       let posts;
       await reference.on('value', snapshot => {
         userData = snapshot.val();
-        const actualData = Object.values(userData);
-        console.log({act:actualData[0]});
+       
         if (userData) {
+          const actualData = Object.values(userData);
+          console.log({act:actualData[0]});
            if(route.params.postId!=='123'){
             posts=actualData.sort((a,b)=>{
                 if(a.id===route.params.postId){
@@ -145,8 +146,9 @@ const Home = ({navigation,route}) => {
                 return 0;
             })
             const post = posts.filter((data)=>{
-              return followers.includes(data.uid);
+              return followers.includes(data.uid) || data.uid===user
             })
+            
             setPosts(post);
            }
            else{
@@ -298,6 +300,7 @@ const styles = {
   label: {
     marginTop: 10,
     fontSize: 26,
+    width:'70%',
     color: 'black',
     fontWeight: 'bold',
   },
@@ -312,7 +315,7 @@ const styles = {
     marginLeft: 90,
     marginRight: 10,
   },
-  globeIcon: {alignSelf: 'center', marginLeft: 10},
+  globeIcon: {alignSelf:'center',marginRight:10},
   imagePost: {
     width: '100%',
     height: 300,

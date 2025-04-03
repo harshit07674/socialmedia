@@ -35,7 +35,7 @@ catch(error){
 
   return (
     <View style={{paddingLeft:10,}}>
-    <Image source={{uri:route.params.profile.profilePhoto}} style={{resizeMode:'stretch',marginTop:20,alignSelf:'center',height:90,width:90,borderRadius:40}}></Image>
+    <Image source={{uri:route.params.profile.profilePhoto}} style={{resizeMode:'stretch',marginTop:20,alignSelf:'center',height:90,width:90,borderRadius:45}}></Image>
     <Text style={{marginTop:10,color:'black',fontSize:16,}}>Name</Text>
    <TextInput value={name} onChangeText={setName} style={{height:60,borderBottomColor:'black',borderBottomWidth:2,width:'95%',}} placeholder={route.params.profile.name} placeholderTextColor={'black'}></TextInput>
    <Text style={{marginTop:20,color:'black',fontSize:16,}}>Bio</Text>

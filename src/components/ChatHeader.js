@@ -2,13 +2,13 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const ChatHeader = ({ navFunction,profile, name, online,option,forwardFunction,copyFunction,replyFunction }) => {
+const ChatHeader = ({navToChatProfile, isShowCopy,isShowForward,isShowReply,navFunction,profile, name, online,option,forwardFunction,copyFunction,replyFunction }) => {
   return (
     <View style={styles.topBar}>
       <TouchableOpacity onPress={navFunction}>
         <Icon name="arrow-back" size={25} color={'black'} />
       </TouchableOpacity>
-      <Image style={styles.circle} source={{ uri: profile }} />
+      <TouchableOpacity onPress={navToChatProfile}><Image style={styles.circle} source={{ uri: profile }} /></TouchableOpacity>
       <View>
         <Text style={[styles.label, { marginLeft: 10 }]}>
           {'@' + name}
@@ -28,16 +28,16 @@ const ChatHeader = ({ navFunction,profile, name, online,option,forwardFunction,c
               justifyContent: 'space-between',
               marginLeft: 20,
             }}>
-            <TouchableOpacity onPress={replyFunction}>
+            {isShowReply&&<TouchableOpacity onPress={replyFunction}>
               <Icon name="reply" size={30} color={'black'}></Icon>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </TouchableOpacity>}
+            {isShowForward&&<TouchableOpacity
               onPress={forwardFunction}>
               <Icon name="forward" size={30} color={'black'}></Icon>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={copyFunction}>
+            </TouchableOpacity>}
+            {isShowCopy&&<TouchableOpacity onPress={copyFunction}>
               <Icon name="file-copy" size={30} color={'black'}></Icon>
-            </TouchableOpacity>
+            </TouchableOpacity>}
           </View>
         )}
     </View>

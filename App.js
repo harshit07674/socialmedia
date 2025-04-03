@@ -40,6 +40,8 @@ import firebase from '@react-native-firebase/app';
 import EditProfile from './src/screens/EditProfile';
 import Snap from './src/screens/Snap';
 import Followers from './src/screens/Followers';
+import ChatProfile from './src/screens/ChatProfile';
+import ChangeTheme from './src/screens/ChangeTheme';
 
 
 const stack = createStackNavigator();
@@ -95,6 +97,8 @@ const App = () => {
         <stack.Screen name='edit' component={EditProfile}></stack.Screen>
         <stack.Screen name='snap' component={Snap} options={{headerShown:false}}></stack.Screen>
         <stack.Screen name='followers' component={Followers} options={{headerShown:false}}></stack.Screen>
+        <stack.Screen name='chatProfile' component={ChatProfile} options={{headerShown:false}}></stack.Screen>
+        <stack.Screen name='theme' component={ChangeTheme} options={{headerShown:false}}></stack.Screen>
       </stack.Navigator>
     </NavigationContainer>
   );

@@ -130,7 +130,7 @@ const Friends = ({navigation, route}) => {
           date: realDate.formatedDate,
           time: realDate.realTime,
         }),
-        await chatRef.child(room).child(dateTime).set({
+        await chatRef.child(room).child('chats').child(dateTime).set({
           uid: id,
           message: "Sent A Snap",
           snap:true,
@@ -191,7 +191,7 @@ const Friends = ({navigation, route}) => {
         const chatIdList = [id, sendId];
         chatIdList.sort();
         const room = chatIdList.join('_');
-        await chatRef.child(room).child(dateTime).set({
+        await chatRef.child(room).child('chats').child(dateTime).set({
           uid: id,
           message: message,
           isShared: true,
@@ -215,16 +215,19 @@ const Friends = ({navigation, route}) => {
         const chatIdList = [id, sendId];
         chatIdList.sort();
         const room = chatIdList.join('_');
-        await chatRef.child(room).child(dateTime).set({
+       
+        await chatRef.child(room).child('chats').child(dateTime).set({
           uid: id,
-          message: route.params.item.message,
-          isShared: false,
+          message: route.params.item.isReply===true?route.params.item.replyMessage:route.params.item.message,
+          isShared: route.params.item.isShared,
           isSeen:false,
           isReply:false,
           isForward:true,
           captionText:route.params.item.isMedia?route.params.item.captionText:'',
           profilePhoto: data.profilePhoto,
           name: data.name,
+          mediaType:route.params.item.mediaType,
+          fileName:route.params.item.mediaType!=='text'&&route.params.item.mediaType!=='video'&&route.params.item.mediaType!=='photo'?route.params.item.fileName:'',
           isMedia: route.params.item.isMedia,
           id: dateTime,
           date: realDate.formatedDate,
@@ -410,6 +413,7 @@ const styles = {
   label: {
     marginLeft: 10,
     fontSize: 20,
+    width:'66%',
     color: 'black',
     fontWeight: 'bold',
   },

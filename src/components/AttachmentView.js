@@ -1,10 +1,11 @@
 import React, { useRef, useState } from 'react';
-import {View,TouchableOpacity,FlatList,Image,TextInput,Text,Pressable,Animated} from 'react-native'
+import {View,Modal,TouchableOpacity,FlatList,Image,TextInput,Text,Pressable,Animated} from 'react-native'
 import Video from 'react-native-video';
 import Icon  from 'react-native-vector-icons/MaterialIcons';
 
 
 const AttachmentView = ({setterFunction,images,videoFiles,receiverName,shareFunction,caption,setCaption}) => {
+
     const [currentTime,setCurrentTime]=useState(0);
     const [hours,setHours]=useState(0);
     const [minutes,setMinutes]=useState(0);
@@ -39,7 +40,7 @@ const AttachmentView = ({setterFunction,images,videoFiles,receiverName,shareFunc
             data={images}
             horizontal
             renderItem={({item}) => {
-               if(videoFiles){
+               if(!videoFiles){
               return <Image source={{uri: item}} style={styles.image}></Image>
                }
                else{
@@ -91,7 +92,7 @@ const AttachmentView = ({setterFunction,images,videoFiles,receiverName,shareFunc
                 {receiverName}
               </Text>
             </View>
-            <TouchableOpacity onPress={shareFunction}>
+            <TouchableOpacity onPress={()=>shareFunction(videoFiles?'video':'photo')}>
               <View style={styles.circularButton}>
                 <Icon name={'send'} color={'white'} size={35}></Icon>
               </View>

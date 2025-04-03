@@ -255,7 +255,7 @@ const styles = {
     marginLeft: 5,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     paddingLeft: 10,
     height: 100,
     backgroundColor: 'white',
@@ -266,13 +266,14 @@ const styles = {
   },
   imageContainer: {
     resizeMode: 'stretch',
-    width: 80,
-    height: 80,
+    width: 50,
+    height: 50,
     borderRadius: 50,
   },
   label: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: 'bold',
+    width:'40%',
     marginLeft: 10,
     color: 'black',
   },
@@ -281,12 +282,12 @@ const styles = {
       marginRight: 10,
       alignItems: 'center',
       justifyContent: 'center',
-      width: 60,
+      width: 55,
       height: 40,
       borderRadius: 20,
       backgroundColor: color,
       elevation: 10,
-      marginLeft: 10,
+      
     };
   },
   row: {
@@ -320,8 +321,8 @@ const styles = {
     width: '83%',
   },
   circle: {
-    height: 80,
-    width: 80,
+    height: 50,
+    width: 50,
     borderRadius: 50,
     backgroundColor: 'black',
     alignItems: 'center',
